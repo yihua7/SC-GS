@@ -11,9 +11,11 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 <div align="center">
   <img src="./assets/teaser.png" width="100%" height="100%">
 </div>
-
 *Given (a) an image sequence from a monocular dynamic video, we propose to represent the motion with a set of sparse control points, which can be used to drive 3D Gaussians for high-fidelity rendering.Our approach enables both (b) dynamic view synthesis and (c) motion editing due to the motion representation based on sparse control points*
 
+
+
+## Results
 
 #### Quantitative comparison on D-NeRF datasets. 
 
@@ -22,4 +24,4 @@ We present the average PSNR/SSIM/LPIPS (VGG) values for novel view synthesis on 
   <img src="./assets/D-NeRF-Results.png" width="100%" height="100%">
 </div>
 
- 
+
