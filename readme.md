@@ -2,6 +2,12 @@
   SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes
 </h1>
 
+
+This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes.
+
+ * [Project Page](https://yihua7.github.io/SC-GS-web/)
+ * [Paper](https://yihua7.github.io/SC-GS-web/materials/SC_GS_Arxiv.pdf)
+
 <div align="center">
   <img src="./assets/teaser.png" width="100%" height="100%">
 </div>
@@ -14,10 +20,4 @@ Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPI
   <img src="./assets/D-NeRF-Results.png" width="100%" height="100%">
 </div>
 
-This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes.
-
- * [Project Page](https://yihua7.github.io/SC-GS-web/)
- * [Paper](https://yihua7.github.io/SC-GS-web/materials/SC_GS_Arxiv.pdf)
-
- Code is coming soon : )
  
