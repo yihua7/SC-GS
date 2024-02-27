@@ -44,9 +44,9 @@ https://github.com/yihua7/SC-GS/assets/35869256/9c5ce9d0-92d9-4dea-8904-87b102e4
 
 - [x] Release codes
 
-- [ ] Add requirements.txt
+- [ ] Add a requirements.txt
 
-- [ ] More demos and guidance for editing
+- [x] More demos and guidance for editing
 
 
 <!-- Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPIPS (VGG) values for novel view synthesis on dynamic scenes from D-NeRF, with each cell colored to indicate the best, second best, and third best.
