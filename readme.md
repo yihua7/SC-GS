@@ -37,6 +37,10 @@ CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/ju
 CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/jumpingjacks --model_path outputs/jumpingjacks --deform_type node --node_num 512 --is_blender --eval --gt_alpha_mask_as_scene_mask --local_frame --W 800 --H 800 --random_bg_color --white_background --gui
 ```
 
+* To begin the training, select the 'start' button. The program will begin with pre-training control points in the form of Gaussians for 10,000 steps before progressing to train dynamic Gaussians.
+
+* To view the control points, click on the 'Node' button found on the panel located after 'Visualization'.
+
 ## Editing
 
 https://github.com/yihua7/SC-GS/assets/35869256/9c5ce9d0-92d9-4dea-8904-87b102e4e6fb
