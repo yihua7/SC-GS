@@ -38,7 +38,9 @@ CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/ju
 
 - [x] Release codes
 
-- [] More demos and guidance for editing
+- [ ] Add requirements.txt
+
+- [ ] More demos and guidance for editing
 
 
 <!-- Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPIPS (VGG) values for novel view synthesis on dynamic scenes from D-NeRF, with each cell colored to indicate the best, second best, and third best.
