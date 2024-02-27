@@ -1,0 +1,8 @@
+numpy==1.22.0
+opencv-python==4.5.5.62
+Pillow==7.0.0
+PyYAML==6.0
+scipy==1.10.1
+tensorboard==2.14.0
+torch==1.12.1+cu113
+tqdm==4.66.1
