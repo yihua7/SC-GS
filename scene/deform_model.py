@@ -7,7 +7,7 @@ from utils.system_utils import searchForMaxIteration
 from utils.general_utils import get_expon_lr_func
 
 
-model_dict = {'node': ControlNodeWarp, 'static': StaticNetwork}
+model_dict = {'mlp': DeformNetwork, 'node': ControlNodeWarp, 'static': StaticNetwork}
 
 
 class DeformModel:

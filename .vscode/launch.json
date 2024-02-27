@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "train dnerf debug",
+            "type": "python",
+            "request": "launch",
+            "program": "train_gui.py",
+            "args": [
+                "--source_path", "~/disk8T/cvpr2024/data/DNeRF/jumpingjacks",
+                "--model_path", "outputs//jumpingjacks_new",
+                "--deform_type", "node",
+                "--node_num", "512",
+                "--is_blender",
+                "--eval",
+                "--gui",
+                "--gt_alpha_mask_as_scene_mask",
+                "--local_frame",
+                "--resolution", "2",
+                "--W", "800",
+                "--H", "800",
+                // "--random_bg_color",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

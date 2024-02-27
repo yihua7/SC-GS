@@ -14,7 +14,7 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 
 *Given (a) an image sequence from a monocular dynamic video, we propose to represent the motion with a set of sparse control points, which can be used to drive 3D Gaussians for high-fidelity rendering.Our approach enables both (b) dynamic view synthesis and (c) motion editing due to the motion representation based on sparse control points*
 
-# Install
+## Install
 
 ```bash
 pip install -r requirements.txt
@@ -27,14 +27,14 @@ pip install ./diff-gaussian-rasterization
 pip install ./submodules/simple-knn
 ```
 
-# Run
+## Run
 
 ```bash
 # Run with GUI
 CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/jumpingjacks --model_path outputs/jumpingjacks --deform_type node --node_num 512 --is_blender --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800 --random_bg_color --gui
 ```
 
-# TODO
+## TODO
 
 - [x] Release codes
 
@@ -48,7 +48,7 @@ CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/ju
   <img src="./assets/D-NeRF-Results.png" width="100%" height="100%">
 </div> -->
 
-# Citing
+## Citing
 If you find our work useful, please consider citing:
 ```BibTeX
 @article{huang2023sc,

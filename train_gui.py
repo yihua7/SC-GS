@@ -585,7 +585,7 @@ class GUI:
                         self.need_update = True
                         # self.animation_initialize()
                     dpg.add_slider_float(
-                        label="Animation Time",
+                        label="",
                         default_value=0.,
                         max_value=1.,
                         min_value=0.,
@@ -600,7 +600,7 @@ class GUI:
                                 if not hasattr(self, 'animate_tool') or self.animate_tool is None:
                                     self.animation_initialize()
                     dpg.add_button(
-                        label="Animation",
+                        label="Play",
                         tag="_button_vis_animation",
                         callback=callback_animation_mode,
                         user_data='Animation',
@@ -623,11 +623,23 @@ class GUI:
                             self.is_animation = True
                             self.animation_reset()
                     dpg.add_button(
-                        label="Clear",
+                        label="Clear Graph",
                         tag="_button_clc_animation",
                         callback=callback_clear_animation,
                     )
                     dpg.bind_item_theme("_button_clc_animation", theme_button)
+
+                    def callback_overlay(sender, app_data):
+                        if self.showing_overlay:
+                            self.showing_overlay = False
+                            dpg.configure_item("_button_train_motion_gen", label="show overlay")
+                        else:
+                            self.showing_overlay = True
+                            dpg.configure_item("_button_train_motion_gen", label="close overlay")                    
+                    dpg.add_button(
+                        label="close overlay", tag="_button_overlay", callback=callback_overlay
+                    )
+                    dpg.bind_item_theme("_button_overlay", theme_button)
 
                     # def callback_change_deform_mode(sender, app_data):
                     #     self.deform_mode = app_data
