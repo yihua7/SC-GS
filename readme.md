@@ -34,6 +34,12 @@ pip install ./submodules/simple-knn
 CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/jumpingjacks --model_path outputs/jumpingjacks --deform_type node --node_num 512 --is_blender --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800 --random_bg_color --gui
 ```
 
+## Editing
+
+https://github.com/yihua7/SC-GS/assets/35869256/9c5ce9d0-92d9-4dea-8904-87b102e4e6fb
+
+
+
 ## TODO
 
 - [x] Release codes
