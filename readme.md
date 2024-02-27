@@ -41,11 +41,12 @@ CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/ju
 
 https://github.com/yihua7/SC-GS/assets/35869256/9c5ce9d0-92d9-4dea-8904-87b102e4e6fb
 
+## SOTA Performance
 
-<!-- Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPIPS (VGG) values for novel view synthesis on dynamic scenes from D-NeRF, with each cell colored to indicate the best, second best, and third best.
+Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPIPS (VGG) values for novel view synthesis on dynamic scenes from D-NeRF, with each cell colored to indicate the best, second best, and third best.
 <div align="center">
   <img src="./assets/D-NeRF-Results.png" width="100%" height="100%">
-</div> -->
+</div>
 
 ## Acknowledgement
 
