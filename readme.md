@@ -39,20 +39,36 @@ CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path YOUR/PATH/TO/DATASET/ju
 https://github.com/yihua7/SC-GS/assets/35869256/9c5ce9d0-92d9-4dea-8904-87b102e4e6fb
 
 
-
-## TODO
-
-- [x] Release codes
-
-- [ ] Add a requirements.txt
-
-- [x] More demos and guidance for editing
-
-
 <!-- Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPIPS (VGG) values for novel view synthesis on dynamic scenes from D-NeRF, with each cell colored to indicate the best, second best, and third best.
 <div align="center">
   <img src="./assets/D-NeRF-Results.png" width="100%" height="100%">
 </div> -->
+
+## Acknowledgement
+
+* This framework has been adapted from the notable [Deformable 3D Gaussians](https://github.com/ingra14m/Deformable-3D-Gaussians), a project developed by [Ziyi Yang](https://github.com/ingra14m).
+```
+@article{yang2023deformable3dgs,
+    title={Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction},
+    author={Yang, Ziyi and Gao, Xinyu and Zhou, Wen and Jiao, Shaohui and Zhang, Yuqing and Jin, Xiaogang},
+    journal={arXiv preprint arXiv:2309.13101},
+    year={2023}
+}
+```
+
+* Credits to authors of [3D Gaussians](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/) for their excellent code.
+```
+@Article{kerbl3Dgaussians,
+      author       = {Kerbl, Bernhard and Kopanas, Georgios and Leimk{\"u}hler, Thomas and Drettakis, George},
+      title        = {3D Gaussian Splatting for Real-Time Radiance Field Rendering},
+      journal      = {ACM Transactions on Graphics},
+      number       = {4},
+      volume       = {42},
+      month        = {July},
+      year         = {2023},
+      url          = {https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/}
+}
+```
 
 ## Citing
 If you find our work useful, please consider citing:
