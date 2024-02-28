@@ -67,7 +67,7 @@ Our datareader script can recognize and read the following dataset format automa
 
 ## Acknowledgement
 
-* This framework has been adapted from the notable [Deformable 3D Gaussians](https://github.com/ingra14m/Deformable-3D-Gaussians), a project developed by [Ziyi Yang](https://github.com/ingra14m).
+* This framework has been adapted from the notable [Deformable 3D Gaussians](https://github.com/ingra14m/Deformable-3D-Gaussians), an excellent and pioneering work by [Ziyi Yang](https://github.com/ingra14m).
 ```
 @article{yang2023deformable3dgs,
     title={Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction},
