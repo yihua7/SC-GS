@@ -17,11 +17,13 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 ## Install
 
 ```bash
+git clone https://github.com/yihua7/SC-GS --recursive
+cd SC-GS
+
 pip install -r requirements.txt
 
 # a modified gaussian splatting (+ depth, alpha rendering)
-git clone --recursive https://github.com/ashawkey/diff-gaussian-rasterization
-pip install ./diff-gaussian-rasterization
+pip install ./submodules/diff-gaussian-rasterization
 
 # simple-knn
 pip install ./submodules/simple-knn
