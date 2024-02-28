@@ -53,6 +53,18 @@ Quantitative comparison on D-NeRF datasets. We present the average PSNR/SSIM/LPI
   <img src="./assets/D-NeRF-Results.png" width="100%" height="100%">
 </div>
 
+
+## Dataset
+
+Our datareader script can recognize and read the following dataset format automatically:
+
+* [D-NeRF](https://www.albertpumarola.com/research/D-NeRF/index.html): dynamic scenes of synthetic objects ([download](https://www.dropbox.com/s/0bf6fl0ye2vz3vr/data.zip?e=1&dl=0))
+
+* [NeRF-DS](https://jokeryan.github.io/projects/nerf-ds/): dynamic scenes of specular objects ([download](https://github.com/JokerYan/NeRF-DS/releases/tag/v0.1-pre-release))
+
+* Self-captured videos: 1. install [MiVOS](https://github.com/hkchengrex/MiVOS) and place [interactive_invoke.py](data_tools/interactive_invoke.py) under the installed path. 2. Set the video path in [phone_catch.py](data_tools/phone_catch.py) and run ```python ./data_tools/phone_catch.py``` to achieve frame extraction, video segmentation, and COLMAP pose estimation in sequence. Please refer to [NeRF-Texture](https://github.com/yihua7/NeRF-Texture) for detailed tutorials.
+
+
 ## Acknowledgement
 
 * This framework has been adapted from the notable [Deformable 3D Gaussians](https://github.com/ingra14m/Deformable-3D-Gaussians), a project developed by [Ziyi Yang](https://github.com/ingra14m).

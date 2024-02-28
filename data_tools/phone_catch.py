@@ -12,8 +12,10 @@ import matplotlib
 matplotlib.use('Agg')
 
 
-MIVOS_PATH='/home/yihua/nips2022/code/repos/MiVOS/'
-# MIVOS_PATH='/mnt/sda/syt/dynamic_nerf_dataset/MiVOS/'
+'''
+MiVOS: https://github.com/hkchengrex/MiVOS
+'''
+MIVOS_PATH='YOUR/PATH/TO/MiVOS/'
 sys.path.append(MIVOS_PATH)
 from interactive_invoke import seg_video
 
@@ -143,19 +145,10 @@ def rename_images(path):
 if __name__ == '__main__':
     gap = None
     no_mask = False
-    dataset_name = 'hand5'
-    video_path = f'/home/yihua/disk8T/cvpr2024/data/dynamic_videos/{dataset_name}/{dataset_name}.mp4'
-    # video_path = f'/mnt/sda/syt/dynamic_nerf_dataset/{dataset_name}/{dataset_name}.mp4'
-    # if not os.path.exists(video_path):
-    #     video_path = video_path[:-3] + 'mp4'
+    dataset_name = 'DATA_NAME'
+    video_path = f'YOUR/PATH/TO/{dataset_name}/{dataset_name}.mp4'
     print('Extracting frames from video: ', video_path, ' with gap: ', gap)
     img_path = extract_frames_mp4(video_path, gap=gap)
-    # img_path = '/home/yihua/disk8T/cvpr2024/data/hypernerf/misc_espresso/espresso/rgb/4x'
-    # img_path = '/home/yihua/disk8T/cvpr2024/data/hypernerf/interp_torchocolate/torchocolate/rgb/2x'
-    # img_path = '/home/yihua/disk8T/cvpr2024/data/hypernerf/americano/rgb/2x'
-    # img_path = '/home/yihua/disk8T/cvpr2024/data/hypernerf/chickchicken/rgb/2x'
-    # img_path = '/home/yihua/disk8T/cvpr2024/data/hypernerf/hand1-dense-v2/rgb/2x'
-
     
     # print('Removing Blurry Images')
     # laplace, _ = select_ambiguity(img_path, nb=10, threshold=0.8, mv_files=True)
@@ -178,12 +171,6 @@ if __name__ == '__main__':
     if not no_mask:
         os.rename(img_path, unmsk_path)
         os.rename(msked_path, img_path)
-
-    # dataset_name = 'HK_flowers'
-    # video_path = f'/home/yihua/disk8T/cvpr2023/scan/{dataset_name}/{dataset_name}.mp4'
-    # print('Running COLMAP ...')
-    # colmap2nerf_invoke(img_path)
-
 
 
 def red2mask(img_dir):
