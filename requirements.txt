@@ -6,3 +6,4 @@ scipy==1.10.1
 tensorboard==2.14.0
 torch==1.12.1+cu113
 tqdm==4.66.1
+git+https://github.com/facebookresearch/pytorch3d.git
