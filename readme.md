@@ -2,7 +2,7 @@
   SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes
 
   <a href="https://www.hku.hk/"><img height="70" src="assets/HKU.png"> </a>
-  <a href="https://www.tripo3d.ai/"><img height="70" src="assets/VAST.png"> </a>
+  <a href="https://github.com/VAST-AI-Research/"><img height="70" src="assets/VAST.png"> </a>
   <a href="https://www.zju.edu.cn/english/"><img height="70" src="assets/ZJU.png"> </a> 
 </h1>
 
