@@ -477,7 +477,9 @@ class GUI:
                     dpg.add_text("Save: ")
 
                     def callback_save(sender, app_data, user_data):
-                        self.save_model(mode=user_data)
+                        print("\n[ITER {}] Saving Gaussians".format(self.iteration))
+                        self.scene.save(self.iteration)
+                        self.deform.save_weights(self.args.model_path, self.iteration)
 
                     dpg.add_button(
                         label="model",
