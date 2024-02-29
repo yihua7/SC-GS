@@ -5,7 +5,6 @@ import torch.nn.functional as F
 import pytorch3d.ops
 import numpy as np
 import os
-from torch.func import jacrev, vmap
 from utils.deform_utils import cal_connectivity_from_points, cal_arap_error, arap_deformation_loss
 
 try:
