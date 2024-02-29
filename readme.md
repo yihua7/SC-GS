@@ -1,7 +1,10 @@
 <h1 align="center">
   SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes
-</h1>
 
+  <a href="https://www.hku.hk/"><img height="70" src="assets/HKU.png"> </a>
+  <a href="https://www.tripo3d.ai/"><img height="70" src="assets/VAST.png"> </a>
+  <a href="https://www.zju.edu.cn/english/"><img height="70" src="assets/ZJU.png"> </a> 
+</h1>
 
 This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes.
 
@@ -13,6 +16,7 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 </div>
 
 *Given (a) an image sequence from a monocular dynamic video, we propose to represent the motion with a set of sparse control points, which can be used to drive 3D Gaussians for high-fidelity rendering.Our approach enables both (b) dynamic view synthesis and (c) motion editing due to the motion representation based on sparse control points*
+
 
 ## Install
 
