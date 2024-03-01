@@ -1,4 +1,4 @@
-7  #
+#
 # Copyright (C) 2023, Inria
 # GRAPHDECO research group, https://team.inria.fr/graphdeco
 # All rights reserved.
@@ -11,20 +11,13 @@
 
 import os
 import torch
-from random import randint
-from utils.loss_utils import l1_loss, ssim, kl_divergence
-from gaussian_renderer import render, network_gui
-import sys
-from scene import Scene, GaussianModel, DeformModel
-from utils.general_utils import safe_state, get_linear_noise_func
+from scene import Scene
 import uuid
-from tqdm import tqdm
 from utils.image_utils import psnr, lpips, alex_lpips
-from utils.image_utils import ssim as ssim_
+from utils.image_utils import ssim as ssim_func
 from piq import LPIPS
 lpips = LPIPS()
-from argparse import ArgumentParser, Namespace
-from arguments import ModelParams, PipelineParams, OptimizationParams
+from argparse import Namespace
 from pytorch_msssim import ms_ssim
 
 try:
@@ -102,7 +95,7 @@ def training_report(tb_writer, iteration, Ll1, loss, l1_loss, elapsed, testing_i
 
                     l1_list.append(l1_loss(image[None], gt_image[None]).mean())
                     psnr_list.append(psnr(image[None], gt_image[None]).mean())
-                    ssim_list.append(ssim_(image[None], gt_image[None], data_range=1.).mean())
+                    ssim_list.append(ssim_func(image[None], gt_image[None], data_range=1.).mean())
                     lpips_list.append(lpips(image[None], gt_image[None]).mean())
                     ms_ssim_list.append(ms_ssim(image[None], gt_image[None], data_range=1.).mean())
                     alex_lpips_list.append(alex_lpips(image[None], gt_image[None]).mean())

@@ -17,12 +17,17 @@ from os import makedirs
 from gaussian_renderer import render
 import torchvision
 from utils.general_utils import safe_state
-from utils.pose_utils import pose_spherical, render_wander_path
+from utils.pose_utils import pose_spherical
 from argparse import ArgumentParser
 from arguments import ModelParams, PipelineParams, get_combined_args, OptimizationParams
 from gaussian_renderer import GaussianModel
 import imageio
 import numpy as np
+from pytorch_msssim import ms_ssim
+from piq import LPIPS
+lpips = LPIPS()
+from utils.image_utils import ssim as ssim_func
+from utils.image_utils import psnr, lpips, alex_lpips
 
 
 def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussians, pipeline, background, deform):
@@ -33,6 +38,10 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
     makedirs(render_path, exist_ok=True)
     makedirs(gts_path, exist_ok=True)
     makedirs(depth_path, exist_ok=True)
+
+    # Measurement
+    psnr_list, ssim_list, lpips_list = [], [], []
+    ms_ssim_list, alex_lpips_list = [], []
 
     to8b = lambda x: (255 * np.clip(x, 0, 1)).astype(np.uint8)
     renderings = []
@@ -50,6 +59,16 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
         results = render(view, gaussians, pipeline, background, d_xyz, d_rotation, d_scaling, d_opacity=d_opacity, d_color=d_color, d_rot_as_res=deform.d_rot_as_res)
         alpha = results["alpha"]
         rendering = torch.clamp(torch.cat([results["render"], alpha]), 0.0, 1.0)
+
+        # Measurement
+        image = rendering[:3]
+        gt_image = torch.clamp(view.original_image.to("cuda"), 0.0, 1.0)
+        psnr_list.append(psnr(image[None], gt_image[None]).mean())
+        ssim_list.append(ssim_func(image[None], gt_image[None], data_range=1.).mean())
+        lpips_list.append(lpips(image[None], gt_image[None]).mean())
+        ms_ssim_list.append(ms_ssim(image[None], gt_image[None], data_range=1.).mean())
+        alex_lpips_list.append(alex_lpips(image[None], gt_image[None]).mean())
+
         renderings.append(to8b(rendering.cpu().numpy()))
         depth = results["depth"]
         depth = depth / (depth.max() + 1e-5)
@@ -60,6 +79,14 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
         torchvision.utils.save_image(depth, os.path.join(depth_path, '{0:05d}'.format(idx) + ".png"))
     renderings = np.stack(renderings, 0).transpose(0, 2, 3, 1)
     imageio.mimwrite(os.path.join(render_path, 'video.mp4'), renderings, fps=30, quality=8)
+
+    # Measurement
+    psnr_test = torch.stack(psnr_list).mean()
+    ssim_test = torch.stack(ssim_list).mean()
+    lpips_test = torch.stack(lpips_list).mean()
+    ms_ssim_test = torch.stack(ms_ssim_list).mean()
+    alex_lpips_test = torch.stack(alex_lpips_list).mean()
+    print("\n[ITER {}] Evaluating {}: PSNR {} SSIM {} LPIPS {} MS SSIM{} ALEX_LPIPS {}".format(iteration, name, psnr_test, ssim_test, lpips_test, ms_ssim_test, alex_lpips_test))
 
 
 def interpolate_time(model_path, load2gpt_on_the_fly, name, iteration, views, gaussians, pipeline, background, deform):
