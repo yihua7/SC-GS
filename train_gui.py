@@ -488,6 +488,13 @@ class GUI:
                         user_data='model',
                     )
                     dpg.bind_item_theme("_button_save_model", theme_button)
+
+                    def callback_screenshot(sender, app_data):
+                        self.should_save_screenshot = True
+                    dpg.add_button(
+                        label="screenshot", tag="_button_screenshot", callback=callback_screenshot
+                    )
+                    dpg.bind_item_theme("_button_screenshot", theme_button)
                     
                     def callback_cache_nn(sender, app_data):
                         self.deform.deform.cached_nn_weight = not self.deform.deform.cached_nn_weight
