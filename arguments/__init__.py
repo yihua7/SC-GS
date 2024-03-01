@@ -62,7 +62,7 @@ class ModelParams(ParamGroup):
         self.is_blender = False
         self.deform_type = 'node'
         self.skinning = False
-        self.hyper_dim = 2
+        self.hyper_dim = 8
         self.node_num = 1024
         self.pred_opacity = False
         self.pred_color = False
