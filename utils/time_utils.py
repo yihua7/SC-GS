@@ -1156,7 +1156,7 @@ class ControlNodeWarp(nn.Module):
                     nodes_t = (self.nodes[..., :3] + node_trans).detach()
                     nodes_t_init = nodes_t
                     nodes_t = nodes_t + node_trans_bias
-                    node_rot_bias, _ = self.p2dR(p=nodes_t, p0=nodes_t_init, K=8, as_quat=True, mode='floyd', t0=t)
+                    node_rot_bias, _ = self.p2dR(p=nodes_t, p0=nodes_t_init, K=8, as_quat=True, mode='trajectory', t0=t)
                     node_rot = quaternion_multiply(node_rot_bias, node_rot)
 
             # Interpolate to obtain rotation of Gaussians
@@ -1191,7 +1191,7 @@ class ControlNodeWarp(nn.Module):
                     cur_nn_weight, _, cur_nn_idx = self.cal_nn_weight_floyd(x=cur_gs, t0=t, cur_node=cur_node, K=8, GraphK=3, temperature=1e-3, XisNode=False)
 
                     nodes_t = cur_node + node_trans_bias
-                    node_rot_bias, _ = self.p2dR(p=nodes_t, p0=cur_node, K=8, as_quat=True, mode='floyd', t0=t)
+                    node_rot_bias, _ = self.p2dR(p=nodes_t, p0=cur_node, K=8, as_quat=True, mode='trajectory', t0=t)
                     d_rotation_bias = (node_rot_bias[cur_nn_idx] * cur_nn_weight[..., None]).sum(dim=1)
                     d_nn_node_rot_R = quaternion_to_matrix(node_rot_bias)[cur_nn_idx]
                     gs_init = x + translate
