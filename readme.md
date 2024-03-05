@@ -75,7 +75,7 @@ CUDA_VISIBLE_DEVICES=0 python render.py --source_path YOUR/PATH/TO/DATASET/jumpi
 
 https://github.com/yihua7/SC-GS/assets/35869256/7a71d29b-975e-4870-afb1-7cdc96bb9482
 
-With interactive SC-GS, feel free to edit and create your digital assets as following:
+With interactive editing empowered by SC-GS, feel free to edit and create your digital assets as follows:
 
 <div align="center">
   <img src="./assets/edited_jumpingjacks.gif" width="24.5%">
