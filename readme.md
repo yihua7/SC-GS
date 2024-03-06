@@ -12,6 +12,15 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 [![Paper](https://img.shields.io/badge/arXiv-PDF-b31b1b)](https://arxiv.org/abs/2312.14937)
 
 <div align="center">
+  <img src="./assets/edited_jumpingjacks.gif" width="24.5%">
+  <img src="./assets/edited_hook.gif" width="24.5%">
+  <img src="./assets/edited_mutant.gif" width="24.5%">
+  <img src="./assets/edited_lego.gif" width="24.5%">
+</div>
+
+*With interactive editing empowered by SC-GS, users can effortlessly edit and customize their digital assets with interactive editing features.*
+
+<div align="center">
   <img src="./assets/teaser.png" width="100%" height="100%">
 </div>
 
@@ -75,14 +84,6 @@ CUDA_VISIBLE_DEVICES=0 python render.py --source_path YOUR/PATH/TO/DATASET/jumpi
 
 https://github.com/yihua7/SC-GS/assets/35869256/7a71d29b-975e-4870-afb1-7cdc96bb9482
 
-With interactive editing empowered by SC-GS, feel free to edit and create your digital assets as follows:
-
-<div align="center">
-  <img src="./assets/edited_jumpingjacks.gif" width="24.5%">
-  <img src="./assets/edited_hook.gif" width="24.5%">
-  <img src="./assets/edited_mutant.gif" width="24.5%">
-  <img src="./assets/edited_lego.gif" width="24.5%">
-</div>
 
 ## SOTA Performance
 
