@@ -73,6 +73,7 @@ class ModelParams(ParamGroup):
         self.local_frame = False
         self.progressive_brand_time = False
         self.gs_with_motion_mask = False
+        self.init_isotropic_gs_with_all_colmap_pcl = False
         self.as_gs_force_with_motion_mask = False  # Only for scenes with both static and dynamic parts and without alpha mask
         self.max_d_scale = -1.
         super().__init__(parser, "Loading Parameters", sentinel)

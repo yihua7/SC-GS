@@ -163,7 +163,7 @@ class GUI:
                     self.deform.deform.init(init_pcl=xyz, force_init=True, opt=self.opt, as_gs_force_with_motion_mask=self.dataset.as_gs_force_with_motion_mask, force_gs_keep_all=True)
                 else:
                     print('Initialize nodes with COLMAP point cloud.')
-                    self.deform.deform.init(init_pcl=self.gaussians.get_xyz, force_init=True, opt=self.opt, as_gs_force_with_motion_mask=self.dataset.as_gs_force_with_motion_mask, force_gs_keep_all=False)
+                    self.deform.deform.init(init_pcl=self.gaussians.get_xyz, force_init=True, opt=self.opt, as_gs_force_with_motion_mask=self.dataset.as_gs_force_with_motion_mask, force_gs_keep_all=self.dataset.init_isotropic_gs_with_all_colmap_pcl)
             else:
                 print('Initialize nodes with Random point cloud.')
                 self.deform.deform.init(init_pcl=self.gaussians.get_xyz, force_init=True, opt=self.opt, as_gs_force_with_motion_mask=False, force_gs_keep_all=args.skinning)

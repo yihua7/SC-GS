@@ -102,6 +102,12 @@ Our datareader script can recognize and read the following dataset format automa
 
 * Self-captured videos: 1. install [MiVOS](https://github.com/hkchengrex/MiVOS) and place [interactive_invoke.py](data_tools/interactive_invoke.py) under the installed path. 2. Set the video path in [phone_catch.py](data_tools/phone_catch.py) and run ```python ./data_tools/phone_catch.py``` to achieve frame extraction, video segmentation, and COLMAP pose estimation in sequence. Please refer to [NeRF-Texture](https://github.com/yihua7/NeRF-Texture) for detailed tutorials.
 
+**Important Note for Using Self-captured Videos**: 
+
+* Please remember to remove `--is_blender` option in your command, which causes the nodes to be initialized from random point clouds instead of COLMAP point clouds. 
+* Additionally, you can remove `--gt_alpha_mask_as_scene_mask` and add `--gt_alpha_mask_as_dynamic_mask --gs_with_motion_mask` if you want to model both the dynamic foreground masked by MiVOS and the static background simultaneously.
+* If removing `--is_blender` still meets the failure of node initialization, please use the option: `--init_isotropic_gs_with_all_colmap_pcl`. This will initialize the isotropic Gaussians with all COLMAP point clouds, which can help avoid the risk of nodes becoming extinct.
+
 
 ## Acknowledgement
 

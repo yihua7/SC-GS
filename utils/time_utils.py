@@ -877,6 +877,9 @@ class ControlNodeWarp(nn.Module):
         return self.nodes.shape[0]
     
     def init(self, opt, init_pcl, hyper_pcl=None, keep_all=False, force_init=False, as_gs_force_with_motion_mask=False, force_gs_keep_all=False, reset_bbox=True, **kwargs):
+        # keep_all: initialize nodes with all init_pcl given. it happens when sample nodes from the isotropic Gaussians right after the node training
+        # force_gs_keep_all: initialize isotropic Gaussians with all init_pcl given. it happens in the very beginning of the training.
+
         # Initialize Nodes
         if self.inited and not force_init:
             return

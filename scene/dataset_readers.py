@@ -198,7 +198,7 @@ def storePly(path, xyz, rgb):
     ply_data.write(path)
 
 
-def readColmapSceneInfo(path, images, eval, llffhold=16, apply_cam_norm=False, recenter_by_pcl=True):
+def readColmapSceneInfo(path, images, eval, llffhold=16, apply_cam_norm=False, recenter_by_pcl=False):
     sparse_name = "sparse" if os.path.exists(os.path.join(path, "sparse")) else "colmap_sparse"
     try:
         cameras_extrinsic_file = os.path.join(path, f"{sparse_name}/0", "images.bin")
