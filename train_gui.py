@@ -225,7 +225,7 @@ class GUI:
         self.view_animation = True
         self.n_rings_N = 2
         # Use ARAP or Generative Model to Deform
-        self.deform_mode = "arap"
+        self.deform_mode = "arap_iterative"
 
         if self.gui:
             dpg.create_context()
@@ -650,17 +650,6 @@ class GUI:
                     )
                     dpg.bind_item_theme("_button_overlay", theme_button)
 
-                    # def callback_change_deform_mode(sender, app_data):
-                    #     self.deform_mode = app_data
-                    #     self.need_update = True
-                    # dpg.add_combo(
-                    #     ("arap", "smoother", "nn", "recon_nn", "arap_nn", "vae", "vq-vae"),
-                    #     label="Editing Mode",
-                    #     default_value=self.deform_mode,
-                    #     callback=callback_change_deform_mode,
-                    # )
-
-                with dpg.group(horizontal=True):
                     def callback_save_ckpt(sender, app_data):
                         from utils.pickle_utils import save_obj
                         if not self.is_animation:
@@ -675,6 +664,17 @@ class GUI:
                         label="sv_kpt", tag="_button_save_kpt", callback=callback_save_ckpt
                     )
                     dpg.bind_item_theme("_button_save_kpt", theme_button)
+
+                with dpg.group(horizontal=True):
+                    def callback_change_deform_mode(sender, app_data):
+                        self.deform_mode = app_data
+                        self.need_update = True
+                    dpg.add_combo(
+                        ("arap_iterative", "arap_from_init"),
+                        label="Editing Mode",
+                        default_value=self.deform_mode,
+                        callback=callback_change_deform_mode,
+                    )
 
                 with dpg.group(horizontal=True):
                     def callback_change_n_rings_N(sender, app_data):
@@ -717,9 +717,13 @@ class GUI:
                 self.deform_keypoints.update_delta(delta)
                 self.need_update_overlay = True
 
-            if self.deform_mode == "arap":
+            if self.deform_mode.startswith("arap"):
                 with torch.no_grad():
-                    animated_pcl, quat, ani_d_scaling = self.animate_tool.deform_arap(handle_idx=self.deform_keypoints.get_kpt_idx(), handle_pos=self.deform_keypoints.get_deformed_kpt_np(), return_R=True)
+                    if self.deform_mode == "arap_from_init" or self.animation_trans_bias is None:
+                        init_verts = None
+                    else:
+                        init_verts = self.animation_trans_bias + self.animate_tool.init_pcl
+                    animated_pcl, quat, ani_d_scaling = self.animate_tool.deform_arap(handle_idx=self.deform_keypoints.get_kpt_idx(), handle_pos=self.deform_keypoints.get_deformed_kpt_np(), init_verts=init_verts, return_R=True)
                     self.animation_trans_bias = animated_pcl - self.animate_tool.init_pcl
                     self.animation_rot_bias = quat
                     self.animation_scaling_bias = ani_d_scaling

@@ -58,15 +58,12 @@ class ARAPDeformer:
         self.weight_mask[self.ii, self.nn] = 1
 
         self.L_opt = torch.eye(self.N).cuda()  # replace all the self.L with self.L_opt! s.t. weight is in [0,1], easy to optimize.
-        # self.L_opt[self.ii, self.jj] = self.weight[self.ii, self.nn]  # [Nv, Nv]
         self.cal_L_opt()
         self.b = torch.mm(self.L_opt, self.verts)  # [Nv, 3]
 
         self.point_mask = point_mask  # [N,]
 
     def cal_L_opt(self):
-        # self.normalized_weight = torch.softmax(self.weight, dim=1)
-        # self.normalized_weight = mask_softmax(self.weight, self.weight_mask, dim=1)
         self.normalized_weight = self.weight
         self.L_opt[self.ii, self.jj] = - self.normalized_weight[self.ii, self.nn]  # [Nv, Nv]
 
@@ -98,7 +95,7 @@ class ARAPDeformer:
         return handle_idx - handle_idx_offset
 
 
-    def deform(self, handle_idx, handle_pos, return_R=False):
+    def deform(self, handle_idx, handle_pos, init_verts=None, return_R=False):
         # handle_idx: (M, ), handle_pos: (M, 3)
 
         if self.point_mask is not None:
@@ -117,12 +114,15 @@ class ARAPDeformer:
         
         ### prepare for b_all
         P = produce_edge_matrix_nfmt(self.verts, (self.N, self.K, 3), self.ii, self.jj, self.nn, device=self.device)  # [Nv, K, 3]
-        p_prime = lstsq_with_handles(self.L_opt, self.L_opt@self.verts, handle_idx, handle_pos) # [Nv, 3]  initial vertex positions
+        if init_verts is None:
+            p_prime = lstsq_with_handles(self.L_opt, self.L_opt@self.verts, handle_idx, handle_pos) # [Nv, 3]  initial vertex positions
+        else:
+            p_prime = init_verts
         
         p_prime_seq = [p_prime]
         R = torch.eye(3)[None].repeat(self.N, 1,1).cuda()  # compute rotations
         
-        NUM_ITER = 2
+        NUM_ITER = 3
         D = torch.diag_embed(self.normalized_weight, dim1=1, dim2=2)  # [Nv, K, K]
         for _ in range(NUM_ITER):
             P_prime = produce_edge_matrix_nfmt(p_prime, (self.N, self.K, 3), self.ii, self.jj, self.nn, device=self.device)  # [Nv, K, 3]
@@ -158,15 +158,8 @@ class ARAPDeformer:
             b = 0.5 * (torch.bmm(Rsum_batch, P_batch).squeeze(-1).reshape(self.N, self.K, 3) * self.normalized_weight[...,None]).sum(dim=1)
 
             ### calculate p_prime
-            p_prime = torch.zeros_like(p_prime)  # generate next iteration of fit, from p0_unknown and constraints
-            # p_prime = lstsq_with_handles(self.L, b, handle_idx, handle_pos)  # [Nv, 3]
-            for k, pos in zip(handle_idx, handle_pos):
-                p_prime[handle_idx] = handle_pos
+            p_prime = lstsq_with_handles(self.L_opt, b, handle_idx, handle_pos)  # [Nv, 3]
 
-            b -= b_fixed  # subtract component of LHS not included - constraints
-            p_prime_unknown = torch.mm(self.L_reduced_inv, b[unknown_verts])  # predicted p's for only unknown values
-            # # Assign initially unknown values to `x_out
-            p_prime[unknown_verts] = p_prime_unknown
             p_prime_seq.append(p_prime)
         d_scaling = None
 
