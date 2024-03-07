@@ -88,7 +88,7 @@ https://github.com/yihua7/SC-GS/assets/35869256/7a71d29b-975e-4870-afb1-7cdc96bb
 
 ### Editing Mode
 
-We offer two deformation strategies for editing: iterative deformation and transformation from the initial frozen moment. Users can select their preferred strategy from the Editing Mode drop-down menu on the UI interface.
+We offer two deformation strategies for editing: **(1)** iterative ARAP deformation and **(2)** ARAP starts with the initial frozen moment. Users can select their preferred strategy from the Editing Mode drop-down menu on the UI interface.
 
 <img src="./assets/Editing_mode.png" width="50%">
 
