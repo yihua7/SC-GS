@@ -106,7 +106,7 @@ We offer two deformation strategies for editing: **(1)** iterative ARAP deformat
 
 **Users can personally operate and experience the differences between the two strategies. They can then choose the most suitable strategy to achieve their desired editing effect.**
 
-### Tips on Editing with Iterative deformation (`arap_from_init`)
+### Tips on Editing with the deformation from initial frozen moment (`arap_from_init`)
 
 1. **When and why will artifacts appear when using `arap_from_init`?** Most artifacts of editing are caused by the inaccurate initialization of ARAP deformation, which is an iterative optimization process of position and rotation. To optimize both position and rotation to a global optimum, a good initialization of ARAP is highly required. The mode `arap_from_init` uses Laplacian deformation for initialization, which only minimizes the error of the Laplacian coordinate that changes related to rotation. Hence Laplacian deformation is not robust enough for rotation, resulting in inaccurate initialization in the face of large rotation. As a result, some areas fail to achieve correct rotations in subsequent ARAP deformation results.
 
