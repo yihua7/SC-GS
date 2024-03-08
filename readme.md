@@ -8,8 +8,12 @@
 
 This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes.
 
+<div align="center">
+  
 [![Website](assets/badge-website.svg)](https://yihua7.github.io/SC-GS-web/)
 [![Paper](https://img.shields.io/badge/arXiv-PDF-b31b1b)](https://arxiv.org/abs/2312.14937)
+
+</div>
 
 <div align="center">
   <img src="./assets/edited_jumpingjacks.gif" width="24.5%">
