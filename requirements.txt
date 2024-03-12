@@ -4,11 +4,15 @@ Pillow==7.0.0
 PyYAML==6.0
 scipy==1.10.1
 tensorboard==2.14.0
-torch==1.12.1+cu113
+torch==1.12.1+cu113  # or any later versions
 tqdm==4.66.1
 imageio
 plyfile
 piq
 dearpygui
+lpips
+pytorch_msssim
+matplotlib
+scikit-image
 git+https://github.com/Po-Hsun-Su/pytorch-ssim.git
 git+https://github.com/facebookresearch/pytorch3d.git
