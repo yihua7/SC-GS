@@ -286,14 +286,18 @@ class ProgressiveBandFrequency(nn.Module):
 
 
 class StaticNetwork(nn.Module):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, return_tensors=False, *args, **kwargs) -> None:
         super().__init__()
         self.name = 'static'
         self.param = nn.Parameter(torch.zeros([1]).cuda())
         self.reg_loss = 0.
+        self.return_tensors = return_tensors
 
     def forward(self, x, t, **kwargs):
-        return_dict = {'d_xyz': 0., 'd_rotation': 0., 'd_scaling': 0., 'hidden': 0., 'd_opacity':None, 'd_color': None}
+        if self.return_tensors:
+            return_dict = {'d_xyz': torch.zeros_like(x), 'd_rotation': torch.zeros_like(x[..., [0, 0, 0, 0]]), 'd_scaling': torch.zeros_like(x), 'local_rotation': torch.zeros_like(x[..., [0, 0, 0, 0]]), 'hidden': None, 'd_opacity':None, 'd_color': None}
+        else:
+            return_dict = {'d_xyz': 0., 'd_rotation': 0., 'd_scaling': 0., 'hidden': 0., 'd_opacity':None, 'd_color': None}
         return return_dict
     
     def trainable_parameters(self):
@@ -764,7 +768,7 @@ class HashDeformNetwork(nn.Module):
 
 
 class ControlNodeWarp(nn.Module):
-    def __init__(self, is_blender, init_pcl=None, node_num=512, K=3, use_hash=False, hash_time=False, enable_densify_prune=False, pred_opacity=False, pred_color=False, with_arap_loss=False, with_node_weight=True, local_frame=False, d_rot_as_res=True, skinning=False, hyper_dim=2, progressive_brand_time=False, max_d_scale=-1, **kwargs):
+    def __init__(self, is_blender, init_pcl=None, node_num=512, K=3, use_hash=False, hash_time=False, enable_densify_prune=False, pred_opacity=False, pred_color=False, with_arap_loss=False, with_node_weight=True, local_frame=False, d_rot_as_res=True, skinning=False, hyper_dim=2, progressive_brand_time=False, max_d_scale=-1, is_scene_static=False, **kwargs):
         super().__init__()
         self.K = K
         self.use_hash = use_hash
@@ -780,9 +784,10 @@ class ControlNodeWarp(nn.Module):
         self.pred_opacity = pred_opacity
         self.pred_color = pred_color
         self.max_d_scale = max_d_scale
+        self.is_scene_static = is_scene_static
         
         self.skinning = skinning  # As skin model, discarding KNN weighting
-        if with_arap_loss:
+        if with_arap_loss and not self.is_scene_static:
             self.lambda_arap_landmarks = [ 1e-4,  1e-4,  1e-5,  1e-5,     0]
             self.lambda_arap_steps =     [    0,  5000, 10000, 20000, 20001]
         else:
@@ -790,7 +795,9 @@ class ControlNodeWarp(nn.Module):
             self.lambda_arap_steps =     [0]
 
         # Initialize Network
-        if use_hash:
+        if self.is_scene_static:
+            self.network = StaticNetwork(return_tensors=True)
+        elif use_hash:
             self.network = HashDeformNetwork(local_frame=local_frame, pred_opacity=pred_opacity, pred_color=pred_color, hash_time=hash_time).cuda()
         else:
             self.network = DeformNetwork(is_blender=is_blender, local_frame=local_frame, pred_opacity=pred_opacity, pred_color=pred_color, progressive_brand_time=progressive_brand_time, max_d_scale=max_d_scale).cuda()
@@ -1202,8 +1209,8 @@ class ControlNodeWarp(nn.Module):
                     gs_t = nodes_t[cur_nn_idx] + torch.einsum('gkab,gkb->gka', d_nn_node_rot_R, (gs_init[:, None] - cur_node[cur_nn_idx]))
                     gs_t_avg = (gs_t * cur_nn_weight[..., None]).sum(dim=1)
                     translate = gs_t_avg - x
-                    return_dict['d_xyz'] = translate
-                    return_dict['d_rotation_bias'] = (node_rot_bias[cur_nn_idx] * cur_nn_weight[..., None]).sum(dim=1)
+                    return_dict['d_xyz'] = translate * motion_mask
+                    return_dict['d_rotation_bias'] = ((node_rot_bias[cur_nn_idx] * cur_nn_weight[..., None]).sum(dim=1) - rot_bias) * motion_mask + rot_bias
         
         if self.pred_opacity:
             node_opacity = node_attrs['d_opacity']

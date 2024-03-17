@@ -143,7 +143,7 @@ class GUI:
             print(f'Progressive trian is on. Adjusting the iterations node sampling to {self.opt.iterations_node_sampling} and iterations node rendering {self.opt.iterations_node_rendering}')
 
         self.tb_writer = prepare_output_and_logger(dataset)
-        self.deform = DeformModel(K=self.dataset.K, deform_type=self.dataset.deform_type, is_blender=self.dataset.is_blender, skinning=self.args.skinning, hyper_dim=self.dataset.hyper_dim, node_num=self.dataset.node_num, pred_opacity=self.dataset.pred_opacity, pred_color=self.dataset.pred_color, use_hash=self.dataset.use_hash, hash_time=self.dataset.hash_time, d_rot_as_res=self.dataset.d_rot_as_res and not self.dataset.d_rot_as_rotmat, local_frame=self.dataset.local_frame, progressive_brand_time=self.dataset.progressive_brand_time, with_arap_loss=not self.opt.no_arap_loss, max_d_scale=self.dataset.max_d_scale, enable_densify_prune=self.opt.node_enable_densify_prune)
+        self.deform = DeformModel(K=self.dataset.K, deform_type=self.dataset.deform_type, is_blender=self.dataset.is_blender, skinning=self.args.skinning, hyper_dim=self.dataset.hyper_dim, node_num=self.dataset.node_num, pred_opacity=self.dataset.pred_opacity, pred_color=self.dataset.pred_color, use_hash=self.dataset.use_hash, hash_time=self.dataset.hash_time, d_rot_as_res=self.dataset.d_rot_as_res and not self.dataset.d_rot_as_rotmat, local_frame=self.dataset.local_frame, progressive_brand_time=self.dataset.progressive_brand_time, with_arap_loss=not self.opt.no_arap_loss, max_d_scale=self.dataset.max_d_scale, enable_densify_prune=self.opt.node_enable_densify_prune, is_scene_static=dataset.is_scene_static)
         deform_loaded = self.deform.load_weights(dataset.model_path, iteration=-1)
         self.deform.train_setting(opt)
 
@@ -226,6 +226,8 @@ class GUI:
         self.n_rings_N = 2
         # Use ARAP or Generative Model to Deform
         self.deform_mode = "arap_iterative"
+        self.should_render_customized_trajectory = False
+        self.should_render_customized_trajectory_spiral = False
 
         if self.gui:
             dpg.create_context()
@@ -480,7 +482,6 @@ class GUI:
                         print("\n[ITER {}] Saving Gaussians".format(self.iteration))
                         self.scene.save(self.iteration)
                         self.deform.save_weights(self.args.model_path, self.iteration)
-
                     dpg.add_button(
                         label="model",
                         tag="_button_save_model",
@@ -495,6 +496,24 @@ class GUI:
                         label="screenshot", tag="_button_screenshot", callback=callback_screenshot
                     )
                     dpg.bind_item_theme("_button_screenshot", theme_button)
+
+                    def callback_render_traj(sender, app_data):
+                        self.should_render_customized_trajectory = True
+                    dpg.add_button(
+                        label="render_traj", tag="_button_render_traj", callback=callback_render_traj
+                    )
+                    dpg.bind_item_theme("_button_render_traj", theme_button)
+
+                    def callback_render_traj(sender, app_data):
+                        self.should_render_customized_trajectory_spiral = not self.should_render_customized_trajectory_spiral
+                        if self.should_render_customized_trajectory_spiral:
+                            dpg.configure_item("_button_render_traj_spiral", label="camera")
+                        else:
+                            dpg.configure_item("_button_render_traj_spiral", label="spiral")
+                    dpg.add_button(
+                        label="spiral", tag="_button_render_traj_spiral", callback=callback_render_traj
+                    )
+                    dpg.bind_item_theme("_button_render_traj_spiral", theme_button)
                     
                     def callback_cache_nn(sender, app_data):
                         self.deform.deform.cached_nn_weight = not self.deform.deform.cached_nn_weight
@@ -967,6 +986,8 @@ class GUI:
             if self.should_vis_trajectory:
                 self.draw_gs_trajectory()
                 self.should_vis_trajectory = False
+            if self.should_render_customized_trajectory:
+                self.render_customized_trajectory(use_spiral=self.should_render_customized_trajectory_spiral)
             self.test_step()
 
             dpg.render_dearpygui_frame()
@@ -1083,6 +1104,9 @@ class GUI:
             masks = imageio.imread(mask_id2_dir) / 255.
             flow = torch.from_numpy(flow).float().cuda()
             masks = torch.from_numpy(masks).float().cuda()
+            if flow.shape[0] != image.shape[1] or flow.shape[1] != image.shape[2]:
+                flow = torch.nn.functional.interpolate(flow.permute([2, 0, 1])[None], (image.shape[1], image.shape[2]))[0].permute(1, 2, 0)
+                masks = torch.nn.functional.interpolate(masks.permute([2, 0, 1])[None], (image.shape[1], image.shape[2]))[0].permute(1, 2, 0)
             fid1 = viewpoint_cam.fid
             cam2_id = os.path.basename(flow_id2_dir).split('_')[-1].split('.')[0]
             if not hasattr(self, 'img2cam'):
@@ -1624,6 +1648,179 @@ class GUI:
         fps = round / (t1 - t0)
         print(f'FPS: {fps}')
         return fps
+    
+    def render_customized_trajectory(self, use_spiral=False, traj_dir=None, fps=30, motion_repeat=1):
+        from utils.pickle_utils import load_obj
+        # Remove history trajectory
+        if self.vis_traj_realtime:
+            self.traj_coor = None
+            self.traj_overlay = None
+        # Default trajectory path
+        if traj_dir is None:
+            traj_dir = os.path.join(self.args.model_path, 'trajectory')
+        # Read deformation files for animation presentation
+        deform_keypoint_files = [None] + sorted([file for file in os.listdir(os.path.join(self.args.model_path)) if file.startswith('deform_keypoints') and file.endswith('.pickle')])
+        rendering_animation = len(deform_keypoint_files) > 0
+        if rendering_animation:
+            deform_keypoints, self.animation_time = load_obj(os.path.join(self.args.model_path, deform_keypoint_files[1]))
+            self.animation_initialize()
+        # Read camera trajectory files
+        if os.path.exists(traj_dir):
+            cameras = sorted([cam for cam in os.listdir(traj_dir) if cam.endswith('.pickle')])
+            cameras = [load_obj(os.path.join(traj_dir, cam)) for cam in cameras]
+            if len(cameras) < 2:
+                print('No trajectory cameras found')
+                self.should_render_customized_trajectory = False
+                return
+            if os.path.exists(os.path.join(traj_dir, 'time.txt')):
+                with open(os.path.join(traj_dir, 'time.txt'), 'r') as file:
+                    time = file.readline()
+                    time = time.split(' ')
+                    timesteps = np.array([float(t) for t in time])
+            else:
+                timesteps = np.array([3] * len(cameras))  # three seconds by default
+        elif use_spiral:
+            from utils.pose_utils import render_path_spiral
+            from copy import deepcopy
+            c2ws = []
+            for camera in self.scene.getTrainCameras():
+                c2w = np.eye(4)
+                c2w[:3, :3] = camera.R
+                c2w[:3, 3] = camera.T
+                c2ws.append(c2w)
+            c2ws = np.stack(c2ws, axis=0)
+            poses = render_path_spiral(c2ws=c2ws, focal=self.cam.fovx*200, rots=3, N=30*12)
+            print(f'Use spiral camera poses with {poses.shape[0]} cameras!')
+            cameras_ = []
+            for i in range(len(poses)):
+                cam = MiniCam(
+                    self.cam.pose,
+                    self.W,
+                    self.H,
+                    self.cam.fovy,
+                    self.cam.fovx,
+                    self.cam.near,
+                    self.cam.far,
+                    0
+                )
+                cam.reset_extrinsic(R=poses[i, :3, :3], T=poses[i, :3, 3])
+                cameras_.append(cam)
+            cameras = cameras_
+        else:
+            if self.is_animation:
+                if not self.showing_overlay:
+                    self.buffer_overlay = None
+                else:
+                    self.update_control_point_overlay()
+                fid = torch.tensor(self.animation_time).cuda().float()
+            else:
+                fid = torch.tensor(0).float().cuda()
+            cur_cam = MiniCam(
+                self.cam.pose,
+                self.W,
+                self.H,
+                self.cam.fovy,
+                self.cam.fovx,
+                self.cam.near,
+                self.cam.far,
+                fid = fid
+            )
+            cameras = [cur_cam, cur_cam]
+            timesteps = np.array([3] * len(cameras))  # three seconds by default
+        
+        def min_line_dist_center(rays_o, rays_d):
+            try:
+                if len(np.shape(rays_d)) == 2:
+                    rays_o = rays_o[..., np.newaxis]
+                    rays_d = rays_d[..., np.newaxis]
+                A_i = np.eye(3) - rays_d * np.transpose(rays_d, [0, 2, 1])
+                b_i = -A_i @ rays_o
+                pt_mindist = np.squeeze(-np.linalg.inv((A_i @ A_i).mean(0)) @ (b_i).mean(0))
+            except:
+                pt_mindist = None
+            return pt_mindist
+
+        # Define camera pose keypoints
+        vis_cams = []
+        c2ws = np.stack([cam.c2w for cam in cameras], axis=0)
+        rs = c2ws[:, :3, :3]
+        from scipy.spatial.transform import Slerp
+        slerp = Slerp(times=np.arange(len(c2ws)), rotations=R.from_matrix(rs))
+        from scipy.spatial import geometric_slerp
+        
+        if rendering_animation:
+            from utils.bezier import BezierCurve, PieceWiseLinear
+            points = []
+            for deform_keypoint_file in deform_keypoint_files:
+                if deform_keypoint_file is None:
+                    points.append(self.animate_tool.init_pcl.detach().cpu().numpy())
+                else:
+                    deform_keypoints = load_obj(os.path.join(self.args.model_path, deform_keypoint_file))[0]
+                    animated_pcl, _, _ = self.animate_tool.deform_arap(handle_idx=deform_keypoints.get_kpt_idx(), handle_pos=deform_keypoints.get_deformed_kpt_np(), return_R=True)
+                    points.append(animated_pcl.detach().cpu().numpy())
+            points = np.stack(points, axis=1)
+            bezier = PieceWiseLinear(points=points)
+        
+        # Save path
+        sv_dir = os.path.join(self.args.model_path, 'render_trajectory')
+        os.makedirs(sv_dir, exist_ok=True)
+        import cv2
+        video = cv2.VideoWriter(sv_dir + f'/{self.mode}.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (self.W, self.H))
+
+        # Camera loop
+        for i in range(len(cameras)-1):
+            if use_spiral:
+                total_rate = i / (len(cameras) - 1)
+                cam = cameras[i]
+                if rendering_animation:
+                    cam.fid = torch.tensor(self.animation_time).cuda().float()
+                    animated_pcl = bezier(t=total_rate)
+                    animated_pcl = torch.from_numpy(animated_pcl).cuda()
+                    self.animation_trans_bias = animated_pcl - self.animate_tool.init_pcl
+                else:
+                    cam.fid = torch.tensor(total_rate).cuda().float()
+                image = self.test_step(specified_cam=cam)
+                image = (image * 255).astype('uint8')
+                video.write(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+                vis_cams = poses
+            else:
+                cam0, cam1 = cameras[i], cameras[i+1]
+                frame_num = int(timesteps[i] * fps)
+                avg_center = min_line_dist_center(c2ws[i:i+2, :3, 3], c2ws[i:i+2, :3, 2])
+                if avg_center is not None:
+                    vec1_norm1, vec2_norm = np.linalg.norm(c2ws[i, :3, 3] - avg_center), np.linalg.norm(c2ws[i+1, :3, 3] - avg_center)
+                    slerp_t = geometric_slerp(start=(c2ws[i, :3, 3]-avg_center)/vec1_norm1, end=(c2ws[i+1, :3, 3]-avg_center)/vec2_norm, t=np.linspace(0, 1, frame_num))
+                else:
+                    print('avg_center is None. Move along a line.')
+                
+                for j in range(frame_num):
+                    rate = j / frame_num
+                    total_rate = (i + rate) / (len(cameras) - 1)
+                    if rendering_animation:
+                        animated_pcl = bezier(t=total_rate)
+                        animated_pcl = torch.from_numpy(animated_pcl).cuda()
+                        self.animation_trans_bias = animated_pcl - self.animate_tool.init_pcl
+
+                    rot = slerp(i+rate).as_matrix()
+                    if avg_center is not None:
+                        trans = slerp_t[j] * (vec1_norm1 + (vec2_norm - vec1_norm1) * rate) + avg_center
+                    else:
+                        trans = c2ws[i, :3, 3] + (c2ws[i+1, :3, 3] - c2ws[i, :3, 3]) * rate
+                    c2w = np.eye(4)
+                    c2w[:3, :3] = rot
+                    c2w[:3, 3] = trans
+                    c2w = np.array(c2w, dtype=np.float32)
+                    vis_cams.append(c2w)
+                    fid = cam0.fid + (cam1.fid - cam0.fid) * rate if not rendering_animation else torch.tensor(self.animation_time).cuda().float()
+                    cam = MiniCam(c2w=c2w, width=cam0.image_width, height=cam0.image_height, fovy=cam0.FoVy, fovx=cam0.FoVx, znear=cam0.znear, zfar=cam0.zfar, fid=fid)
+                    image = self.test_step(specified_cam=cam)
+                    image = (image * 255).astype('uint8')
+                    video.write(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+        video.release()
+
+        print('Trajectory rendered done!')
+        self.should_render_customized_trajectory = False
+
 
 def prepare_output_and_logger(args):
     if not args.model_path:

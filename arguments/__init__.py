@@ -76,6 +76,7 @@ class ModelParams(ParamGroup):
         self.init_isotropic_gs_with_all_colmap_pcl = False
         self.as_gs_force_with_motion_mask = False  # Only for scenes with both static and dynamic parts and without alpha mask
         self.max_d_scale = -1.
+        self.is_scene_static = False
         super().__init__(parser, "Loading Parameters", sentinel)
 
     def extract(self, args):

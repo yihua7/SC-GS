@@ -45,7 +45,7 @@ class ARAPDeformer:
         self.K = K
         self.N = len(verts)
 
-        self.ii, self.jj, self.nn, weight = cal_connectivity_from_points(self.verts, self.radius, self.K, trajectory=trajectory, node_radius=node_radius, mode='floyd')
+        self.ii, self.jj, self.nn, weight = cal_connectivity_from_points(self.verts, self.radius, self.K, trajectory=trajectory, node_radius=node_radius)
         self.L = cal_laplacian(Nv=self.N, ii=self.ii, jj=self.jj, nn=self.nn)
         # self.L = cal_L_from_points(points=self.verts)
 
