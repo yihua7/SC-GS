@@ -38,9 +38,9 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 *Given (a) an image sequence from a monocular dynamic video, we propose to represent the motion with a set of sparse control points, which can be used to drive 3D Gaussians for high-fidelity rendering.Our approach enables both (b) dynamic view synthesis and (c) motion editing due to the motion representation based on sparse control points*
 
 
-# Updates
+## Updates
 
-## 2024-03-17: 
+### 2024-03-17: 
 
 1. Editing **static scenes** is now supported! Simply include the `--is_scene_static` argument and you are good to go!
 
@@ -48,11 +48,11 @@ This is the code for SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dy
 
 3. On self-captured real-world scenes where Gaussian number will be too large, the dimension of hyper coordinates that seperate close but disconnected parts can be set to 2 to speed up the rendering: ` --hyper_dim 2`. Also remember to remove `--is_blender` in such cases!
 
-## 2024-03-07
+### 2024-03-07
 
 We offer two ARAP deformation strategies for motion editing: 1. iterative deformation and 2. deformation from Laplacian initialization.
 
-## 2024-03-06
+### 2024-03-06
 
 To prevent initialization failure of control points, you use the argument `--init_isotropic_gs_with_all_colmap_pcl` on self-captured datasets.
 
